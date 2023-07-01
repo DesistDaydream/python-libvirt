@@ -103,7 +103,7 @@ def DomainMonitoring(conn: libvirt.virConnect, table: PrettyTable):
             domainMemUsage = str(DomainMemUsage(domain)) + "%"
             domainCpuUsage = str(DomainCpuUsage(domain)) + "%"
 
-            DomainDiskUsage(domain)
+            # DomainDiskUsage(domain)
 
             table.add_row(
                 [
@@ -134,30 +134,7 @@ stop = False
 
 
 def main():
-    os.system("clear")
-    print(
-        '''
-    *********************************************
-                    _ooOoo_
-                    o8888888o
-                    88" . "88
-                    (| -_- |)
-                    O\  =  /O
-                ____/`---"\____
-                ."  \\|     |//  `.
-                /  \\|||  :  |||//  \\
-            /  _||||| -:- |||||-  \\
-            |   | \\\  -  /// |   |
-            | \_|  ""\---/""  |   |
-            \  .-\__  `-`  ___/-. /
-            ___`. ."  /--.--\  `. . __
-        ."" "<  `.___\_<|>_/___."  >""".
-        | |:  `- \`.; `\ _ /`; .`/ - `: | |
-        \  \ `-.   \_ __\ / __ _ / .-` / /
-    == == ==`-.____`- .___\_____/___.-`____.-"== == ==                    `=-- -="
-    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-            佛祖保佑       永不宕机'''
-    )
+    # os.system("clear")
     print(
         "\033[0;37;41m{}\033[0m".format(
             "######################     实时监控kvm虚拟机信息--CPU,内存,磁盘I/O    ##################"
@@ -165,7 +142,9 @@ def main():
     )
     print("Ctrl+C 可退出程序,脚本每6秒执行一次")
 
-    conn = libvirt.open("qemu:///system")
+    # conn = libvirt.open("qemu:///system")
+    # conn = libvirt.open("qemu+ssh://root@172.38.180.96/system")
+    conn = libvirt.open("qemu+tcp://172.38.180.95/system")
 
     if len(conn.listDomainsID()) <= 0:
         print("\033[0;37;41m{}\033[0m".format("没有正在运行的虚拟机，程序退出."))
