@@ -63,9 +63,8 @@ def listDomains(conn: libvirt.virConnect):
     allMem: int = 0
     allCPU: int = 0
 
-    for id in conn.listDomainsID():
-        domain = conn.lookupByID(id)
-
+    # TODO: 改为列出所有虚拟机，包括开机和不开机的；并且在循环中需要判断，只有开机的才去获取 CPU 和 内存的使用率
+    for domain in conn.listAllDomains(1):
         domainName = "\033[0;37;44m{}\033[0m".format(domain.name())
         domainStat = (
             "\033[0;37;42m%s\033[0m" % "开机"
