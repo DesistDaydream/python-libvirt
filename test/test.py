@@ -87,87 +87,49 @@ def DomainDiskUsage(domain: libvirt.virDomain):
             continue
 
 
-def DomainMonitoring(conn: libvirt.virConnect, table: PrettyTable):
-    try:
-        for id in conn.listDomainsID():
-            domain = conn.lookupByID(id)
-
-            domainName = "\033[0;37;44m{}\033[0m".format(domain.name())
-            domainStat = (
-                "\033[0;37;42m%s\033[0m" % "开机"
-                if domain.info()[0] == 1
-                else "\033[0;37;41m%s\033[0m" % "关机"
-            )
-            domainMem = str(domain.info()[1] / 1024 / 1024) + "GiB"
-            domainCPU = str(domain.info()[3])
-            domainMemUsage = str(DomainMemUsage(domain)) + "%"
-            domainCpuUsage = str(DomainCpuUsage(domain)) + "%"
-
-            # DomainDiskUsage(domain)
-
-            table.add_row(
-                [
-                    domainName,
-                    domainStat,
-                    domainCPU,
-                    domainCpuUsage,
-                    domainMem,
-                    domainMemUsage,
-                ]
-            )
-    except:
-        pass
-
-
-def my_handler(signum, frame):
-    global stop
-    stop = True
-    print("进程被终止")
-
-
-# 设置相应信号处理的handler
-signal.signal(signal.SIGINT, my_handler)
-signal.signal(signal.SIGHUP, my_handler)
-signal.signal(signal.SIGTERM, my_handler)
-
-stop = False
-
-
-def main():
-    # os.system("clear")
-    print(
-        "\033[0;37;41m{}\033[0m".format(
-            "######################     实时监控kvm虚拟机信息--CPU,内存,磁盘I/O    ##################"
-        )
-    )
-    print("Ctrl+C 可退出程序,脚本每6秒执行一次")
-
+def get():
+    # conn = libvirt.open("test:///default")
     # conn = libvirt.open("qemu:///system")
     # conn = libvirt.open("qemu+ssh://root@172.38.180.96/system")
     conn = libvirt.open("qemu+tcp://172.38.180.95/system")
 
-    if len(conn.listDomainsID()) <= 0:
-        print("\033[0;37;41m{}\033[0m".format("没有正在运行的虚拟机，程序退出."))
-        os.system("command")
-        time.sleep(1)
-        sys.exit()
+    domain = conn.lookupByName("tj-test-spst-k3s-node-1")
+    print(domain.info()[2])
 
-    table = PrettyTable(["实例名", "状态", "CPU", "CPU使用率", "内存", "内存使用率"])
+    # virsh desc DOMAIN 获取虚拟机描述
+    desc = domain.metadata(libvirt.VIR_DOMAIN_METADATA_DESCRIPTION, None)
+    print(desc)
 
-    DomainMonitoring(conn, table)
+    # 获取节点上的硬件信息。CPU架构、内存大小、CPU数量、CPU 频率、NUMA 节点数量、每个节点的 CPU 数量、每个插槽的核心数、每个核心的线程数
+    mem = conn.getInfo()[1]
+    cpu = conn.getInfo()[2]
+    print(mem, cpu)
 
-    print(table)
+    # for id in conn.listDomainsID():
+    #     domain = conn.lookupByID(id)
+
+    #     domainName = "\033[0;37;44m{}\033[0m".format(domain.name())
+    #     domainStat = (
+    #         "\033[0;37;42m%s\033[0m" % "开机"
+    #         if domain.info()[0] == 1
+    #         else "\033[0;37;41m%s\033[0m" % "关机"
+    #     )
+    #     domainMem = str(domain.info()[1] / 1024 / 1024) + "GiB"
+    #     domainCPU = str(domain.info()[3])
+    #     domainMemUsage = str(DomainMemUsage(domain)) + "%"
+    #     domainCpuUsage = str(DomainCpuUsage(domain)) + "%"
+
+    #     print(
+    #         domainName,
+    #         domainStat,
+    #         domainCPU,
+    #         domainCpuUsage,
+    #         domainMem,
+    #         domainMemUsage,
+    #     )
 
     conn.close()
 
-    time.sleep(6)
 
-
-while True:
-    try:
-        if stop:
-            break
-    except:
-        pass
-
-    main()
+if __name__ == "__main__":
+    get()
