@@ -24,7 +24,6 @@ def list():  # type: ignore
     ips = ["172.38.180.95", "172.38.180.96", "172.38.180.97"]
     for ip in ips:
         conn = libvirt.open("qemu+tcp://{}/system".format(ip))
-        click.echo("Listing domains")
         listDomains(conn)
         conn.close()
 

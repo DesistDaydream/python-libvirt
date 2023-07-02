@@ -57,7 +57,9 @@ def DomainCpuUsage(domain: libvirt.virDomain):
 
 
 def listDomains(conn: libvirt.virConnect):
-    table = PrettyTable(["实例名", "状态", "CPU", "CPU使用率", "内存", "内存使用率"])
+    table = PrettyTable(["实例", "状态", "CPU", "CPU使用率", "内存", "内存使用率"])
+    table.title = conn.getHostname()
+
     allMem: int = 0
     allCPU: int = 0
 
@@ -70,10 +72,10 @@ def listDomains(conn: libvirt.virConnect):
             if domain.info()[0] == 1
             else "\033[0;37;41m%s\033[0m" % "关机"
         )
-        domainMem = str(domain.info()[2] / 1024 / 1024) + "GiB"
         domainCPU = str(domain.info()[3])
-        domainMemUsage = str(DomainMemUsage(domain)) + "%"
+        domainMem = str(domain.info()[2] / 1024 / 1024) + "GiB"
         domainCpuUsage = str(DomainCpuUsage(domain)) + "%"
+        domainMemUsage = str(DomainMemUsage(domain)) + "%"
 
         # DomainDiskUsage(domain)
 
